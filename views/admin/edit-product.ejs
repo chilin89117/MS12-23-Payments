@@ -1,0 +1,66 @@
+<%- include('../includes/head.ejs') %>
+  <link rel="stylesheet" href="/css/forms.css">
+  <link rel="stylesheet" href="/css/product.css">
+</head>
+<body>
+  <%- include('../includes/nav.ejs') %>
+  <% if(valErrs.length > 0) { %>
+  <div class="flash flash__error">
+    Oops!
+    <% valErrs.forEach(v => { %>
+    <li><%= v.msg %></li>
+    <% }) %>
+  </div>
+  <% } %>
+  <% if(flashMsg.error) { %>
+  <div class="flash flash__error"><%= flashMsg.error %></div>
+  <% } %>
+  <% if(flashMsg.success) { %>
+  <div class="flash flash__success"><%= flashMsg.success %></div>
+  <% } %>
+  <main>
+    <form
+      class="product-form" method="POST" enctype="multipart/form-data"
+      action="/admin/<% if(editing) { %>edit-product<% } else { %>add-product<% } %>"
+    >
+      <div class="form-control">
+        <label for="title">Title</label>
+        <input
+          class="<%= valErrs.find(v => v.param === 'title') ? 'invalid' : '' %>"
+          type="text" name="title" id="title" autofocus
+          value="<% if(editing && !hasErrors) { %><%= prod.title %><% } else { %><%= oldInputs.title %><% } %>">
+      </div>
+      <!-- <div class="form-control">
+        <label for="image_url">Image URL</label>
+        <input 
+          class="<%= valErrs.find(v => v.param === 'image_url') ? 'invalid' : '' %>"
+          type="text" name="image_url" id="image_url"
+          value="<% if(editing && !hasErrors) { %><%= prod.image_url %><% } else { %><%= oldInputs.image_url %><% } %>">
+      </div> -->
+      <div class="form-control">
+        <label for="image">Image File</label>
+        <input
+          class="<%= valErrs.find(v => v.param === 'image') ? 'invalid' : '' %>"
+          type="file" name="image" id="image">
+      </div>
+      <div class="form-control">
+        <label for="price">Price</label>
+        <input
+          class="<%= valErrs.find(v => v.param === 'price') ? 'invalid' : '' %>"
+          type="number" step="0.01" name="price" id="price"
+          value="<% if(editing && !hasErrors) { %><%= prod.price %><% } else { %><%= oldInputs.price %><% } %>">
+      </div>
+      <div class="form-control">
+        <label for="description">Description</label>
+        <textarea
+          class="<%= valErrs.find(v => v.param === 'description') ? 'invalid' : '' %>"
+          name="description" id="description" rows="5"><% if(editing && !hasErrors) { %><%= prod.description %><% } else { %><%= oldInputs.description %><% } %></textarea>
+      </div>
+      <input type="hidden" name="id" value="<% if(editing) { %><%= prod._id %><% } %>">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <button class="btn" type="submit">
+        <% if(editing) { %>Update Product<% } else { %>Add Product<% } %>
+      </button>
+    </form>
+  </main>
+<%- include('../includes/end.ejs') %>

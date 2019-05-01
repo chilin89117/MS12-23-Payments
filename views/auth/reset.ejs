@@ -1,0 +1,23 @@
+<%- include('../includes/head.ejs') %>
+  <link rel="stylesheet" href="/css/forms.css">
+  <link rel="stylesheet" href="/css/auth.css">
+</head>
+<body>
+  <%- include('../includes/nav.ejs') %>
+  <main>
+    <% if(flashMsg.error) { %>
+    <div class="flash flash__error"><%= flashMsg.error %></div>
+    <% } %>
+    <% if(flashMsg.success) { %>
+    <div class="flash flash__success"><%= flashMsg.success %></div>
+    <% } %>
+    <form class="login-form" action="/reset" method="POST">
+      <div class="form-control">
+        <label for="email">Email</label>
+        <input type="text" name="email" id="email">
+      </div>
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <button class="btn" type="submit">Reset Password</button>
+    </form>
+  </main>
+<%- include('../includes/end.ejs') %>

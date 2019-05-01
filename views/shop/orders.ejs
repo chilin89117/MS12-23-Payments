@@ -1,0 +1,39 @@
+<%- include('../includes/head.ejs') %>
+  <link rel="stylesheet" href="/css/orders.css">
+</head>
+<body>
+  <%- include('../includes/nav.ejs') %>
+  <main>
+    <% if(flashMsg.success) { %>
+    <div class="flash flash__success"><%= flashMsg.success %></div>
+    <% } %>
+    <% if(flashMsg.error) { %>
+      <div class="flash flash__error"><%= flashMsg.error %></div>
+    <% } %>
+    <h3 class="centered">Order History</h3>
+    <% if(orders.length === 0) { %>
+      <h3>You have no orders!!!</h3>
+    <% } else { %>
+      <div class="orders">
+        <% orders.forEach(o => { %>
+        <div class="item">
+          <h4 class="order-id">Order ID: <%= o._id %></h4>
+          <ul class="products">
+            <% o.items.forEach(i => { %>
+            <li class="product">
+              <span class="product-title">Title: <%= i.title %></span>
+              <span class="product-qty">Quantity: <%= i.qty %></span>
+              <span class="product-price">Price: $ <%= i.price.toFixed(2) %></span>
+            </li>
+            <% }) %>
+          </ul>
+          <div class="order-footer">
+            <div class="order-total">Total: $ <%= o.items.reduce((acc, i) => acc += i.qty * i.price, 0).toFixed(2) %></div>
+            <a href="/invoice/<%= o._id %>" class="btn order-invoice-btn">View Downloadable Invoice</a>
+          </div>
+        </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </main>
+<%- include('../includes/end.ejs') %>

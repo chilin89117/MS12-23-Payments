@@ -1,0 +1,11 @@
+<%- include('../includes/head.ejs') %>
+</head>
+<body>
+  <%- include('../includes/nav.ejs') %>
+  <div class="error-page">
+    <h1>An error has occurred.</h1>
+    <h4>We are working on fixing this. Sorry for the inconvenience.</h4>
+    <hr>
+    <p><%= error.message %></p>
+  </div>
+<%- include('../includes/end.ejs') %>

@@ -1,0 +1,54 @@
+.orders {
+  list-style: none;
+  width: 75%;
+  padding: 0;
+  margin: 0 auto;
+}
+.order-id {
+  margin: 0;
+}
+.order-footer {
+  display: flex;
+  justify-content: space-between;
+}
+.order-total {
+  font-weight: bold;
+}
+.order-invoice-btn {
+  border-color: darkorange;
+  color: darkorange;
+}
+.order-invoice-btn:hover,
+.order-invoice-btn:active {
+  background-color: darkorange;
+  color: white;
+}
+.item {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  padding: 0.8rem;
+  margin-bottom: 1rem;
+}
+.products {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.product {
+  display: flex;
+  justify-content: space-between;
+  margin: 0.3rem 0;
+  padding: 0.4rem;
+  border: 1px solid #00695c;
+  color: #00695c;
+  font-size: 0.9rem;
+}
+.product-title {
+  width: 50%;
+}
+.product-qty {
+  width: 15%;
+}
+.product-price {
+  width: 20%;
+  text-align: right;
+}
