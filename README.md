@@ -1,6 +1,10 @@
 # MS12-23-Payments
 ## Section 23 - Adding Payments
 
+![a](../assets/a.png?raw=true)
+![b](../assets/b.png?raw=true)
+![c](../assets/c.png?raw=true)
+
 ### 0. Continued from [Section 17](https://github.com/chilin89117/MS12-17-Auth)
 ---
 ### 1. Run
@@ -60,4 +64,4 @@
   - Creates a new checkout page with `Pay with Card` button from Stripe
   - Replaces `create-order` route with `create-checkout` route
     - `create-checkout` route is placed in `app.js` to avoid csrf token error
-  - Creates order, submit payment data to Stripe, clear cart, display orders page
+  - Creates order, submits payment data to Stripe, clears cart, displays orders page
