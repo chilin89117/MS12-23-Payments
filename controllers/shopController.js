@@ -7,15 +7,16 @@ const User = require('../models/User');
 const createPDF = require('../util/createPDF');
 const ITEMS_PER_PAGE = 4;
 
-// GET /products
+// GET /products --------------------------------------------------------------
 exports.getProducts = (req, res, next) => {
   const page = +req.query.page || 1;
   let numDocs;
   Product
-    .countDocuments()
+    .countDocuments({deleted: false})
     .then(num => {
       numDocs = num;
-      return Product.find()
+      return Product.find({deleted: false})
+        .sort({createdAt: -1})
         .skip((page - 1) * ITEMS_PER_PAGE)
         .limit(ITEMS_PER_PAGE);
     })
@@ -36,11 +37,12 @@ exports.getProducts = (req, res, next) => {
     .catch(err => next(err));
 };
 
-// GET /products/:id
+// GET /products/:id ----------------------------------------------------------
 exports.getProduct = (req, res, next) => {
   Product
     .findById(req.params.id)
     .then(prod => {
+      if(prod.deleted) throw new Error('Product not found.');
       res.render('shop/product-detail', {
         prod,
         pageTitle: prod.title,
@@ -50,15 +52,16 @@ exports.getProduct = (req, res, next) => {
     .catch(err => next(err));
 };
 
-// GET /
+// GET / ----------------------------------------------------------------------
 exports.getIndex = (req, res, next) => {
   const page = +req.query.page || 1;
   let numDocs;
   Product
-    .countDocuments()
+    .countDocuments({deleted: false})
     .then(num => {
       numDocs = num;
-      return Product.find()
+      return Product.find({deleted: false})
+        .sort({createdAt: -1})
         .skip((page - 1) * ITEMS_PER_PAGE)
         .limit(ITEMS_PER_PAGE);
     })
@@ -79,7 +82,7 @@ exports.getIndex = (req, res, next) => {
     .catch(err => next(err));
 };
 
-// GET /cart (see sample output below)
+// GET /cart (see sample output below) ----------------------------------------
 exports.getCart = (req, res, next) => {
   User
     .findById(req.user._id)
@@ -99,12 +102,12 @@ exports.getCart = (req, res, next) => {
     .catch(err => next(err));
 };
 
-// POST /add-to-cart
+// POST /add-to-cart ----------------------------------------------------------
 exports.postAddToCart = (req, res, next) => {
   Product
     .findById(req.body.id)
     // use 'req.user' set in 'app.js' because it is a Mongoose object
-    // 'req.session.user' does not have access to Mongoose schema
+    // 'req.session.user' does not have access to Mongoose schema methods
     .then(product => req.user.addToCart(product))
     .then(result => {
       req.flash('success', 'Product added to cart.');
@@ -113,7 +116,7 @@ exports.postAddToCart = (req, res, next) => {
     .catch(err => next(err));
 };
 
-// POST /del-cart-item
+// POST /del-cart-item --------------------------------------------------------
 exports.postDeleteCartItem = (req, res, next) => {
   const {id, qty} = req.body;
   User
@@ -126,7 +129,7 @@ exports.postDeleteCartItem = (req, res, next) => {
     .catch(err => next(err));
 };
 
-// GET /orders
+// GET /orders ----------------------------------------------------------------
 exports.getOrders = (req, res, next) => {
   Order
     .find({'user._id': req.user._id})
@@ -141,7 +144,7 @@ exports.getOrders = (req, res, next) => {
     .catch(err => next(err));
 };
 
-// POST /create-order
+// POST /create-order ---------------------------------------------------------
 exports.postOrder = (req, res, next) => {
   User
     .findById(req.user._id)
@@ -168,7 +171,7 @@ exports.postOrder = (req, res, next) => {
     .catch(err => next(err));
 };
 
-// GET /invoice/:id
+// GET /invoice/:id -----------------------------------------------------------
 exports.getInvoice = (req, res, next) => {
   const id = req.params.id;
   Order
@@ -202,7 +205,7 @@ exports.getInvoice = (req, res, next) => {
     });
 };
 
-// Section 23: Adding Payments
+// Section 23: Adding Payments ------------------------------------------------
 exports.getCheckout = (req, res, next) => {
   User
     .findById(req.user._id)
@@ -223,7 +226,7 @@ exports.getCheckout = (req, res, next) => {
     .catch(err => next(err));
 }
 
-// Section 23: Adding Payments
+// Section 23: Adding Payments ------------------------------------------------
 exports.postCheckout = (req, res, next) => {
   // token is created using Checkout or Elements!
   // get the payment token ID submitted by the form:
@@ -262,7 +265,7 @@ exports.postCheckout = (req, res, next) => {
     .catch(err => next(err));
 }
 
-// Sample output from 'populate'
+// Sample output from 'populate' ----------------------------------------------
 // {
 //   cart: {
 //     items: [

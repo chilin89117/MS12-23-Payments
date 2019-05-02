@@ -8,6 +8,7 @@ const productSchema = new Schema(
     price: {type: Number, required: true},
     description: {type: String, required: true},
     image_url: {type: String, required: false},
+    deleted: {type: Boolean, default: false},
     user_id: {type: Schema.Types.ObjectId, ref: 'User', required: true}
   },
   {timestamps: true}

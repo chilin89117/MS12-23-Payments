@@ -51,13 +51,13 @@
 - Generates invoice PDF files from orders with `pdfkit` package
   - Saves invoice PDFs to `/downloads/invoices` directory
 - Requests for previously generated invoices are piped from filesystem
-- Image files of deleted products are ***not*** removed from filesystem because they are still used by previously generated invoices
+- Image files of deleted products are ***not*** removed from filesystem because they are needed to generate invoices for past orders that may include deleted products
 ---
 ### 7. Section 21 (Pagination) Changes:
 - Adds pagination to `'/'`, `'/products'`, and `'/admin/products'` routes
 ---
 ### 8. Section 22 (Async Requests) Changes:
-- Add client-side JS to delete product by id and directly removing product from DOM (***not implemented***)
+- Adds client-side JS to delete product by id and directly removing product from DOM (***code included but not used***)
 ---
 ### 9. Section 23 (Stripe Payments) Changes:
 - Adds payment functionality through Stripe
@@ -65,3 +65,11 @@
   - Replaces `create-order` route with `create-checkout` route
     - `create-checkout` route is placed in `app.js` to avoid csrf token error
   - Creates order, submits payment data to Stripe, clears cart, displays orders page
+---
+### 10. Updates 5/2/2019
+- Add descending `createdAt` sort order to `'/'`, `'/products'`, and `'/admin/products'` routes
+- Add `deleted` field to `Product` model with default `false`
+  - Only products with `{deleted: false}` are shown
+  - Set to `true` when product is deleted by user
+  - Product is not deleted from database so it can be used to generate invoices in the future
+- Throw an error when attempting to view/edit deleted product through URL

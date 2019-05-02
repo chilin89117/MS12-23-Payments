@@ -4,7 +4,7 @@ const Product = require('../models/Product');
 const User = require('../models/User');
 const ITEMS_PER_PAGE = 2;
 
-// GET /admin/add-product
+// GET /admin/add-product -----------------------------------------------------
 exports.getAddProduct = (req, res, next) => {
   res.render('admin/edit-product', {
     pageTitle: 'MS12-23-Payments Add Product', 
@@ -17,7 +17,7 @@ exports.getAddProduct = (req, res, next) => {
   });
 };
 
-// POST /admin/add-product
+// POST /admin/add-product ----------------------------------------------------
 exports.postAddProduct = (req, res, next) => {
   const {title, price, description} = req.body;
   const image = req.file;   // see sample object in 'middleware/multer.js'
@@ -61,12 +61,13 @@ exports.postAddProduct = (req, res, next) => {
     .catch(err => next(err));
 };
 
-// GET /admin/edit-product
+// GET /admin/edit-product ----------------------------------------------------
 exports.getEditProduct = (req, res, next) => {
   const editMode = !!req.query.edit;
   Product
     .findById(req.params.id)
     .then(prod => {
+      if(prod.deleted) throw new Error('Product not found.');
       res.render('admin/edit-product', {
         pageTitle: 'MS12-23-Payments Edit Product', 
         path: '/admin/edit-product',
@@ -80,7 +81,7 @@ exports.getEditProduct = (req, res, next) => {
     .catch(err => next(err));
 };
 
-// POST /admin/edit-product
+// POST /admin/edit-product ---------------------------------------------------
 exports.postEditProduct = (req, res, next) => {
   const {id, title, price, description} = req.body;
   const image = req.file;
@@ -117,16 +118,17 @@ exports.postEditProduct = (req, res, next) => {
     .catch(err => next(err));
 };
 
-// GET /admin/products
+// GET /admin/products --------------------------------------------------------
 exports.getProducts = (req, res, next) => {
   const page = +req.query.page || 1;
   let numDocs;
   Product
-    .countDocuments({user_id: req.user._id})    // show only products created by user
+    .countDocuments({user_id: req.user._id})  // show only products created by user
     .then(num => {
       numDocs = num;
       return Product
-        .find({user_id: req.user._id})
+        .find({user_id: req.user._id, deleted: false})
+        .sort({createdAt: -1})
         .skip((page - 1) * ITEMS_PER_PAGE)
         .limit(ITEMS_PER_PAGE);
     })
@@ -147,14 +149,15 @@ exports.getProducts = (req, res, next) => {
     .catch(err => next(err));
 };
 
-// POST /admin/delete-product
+// POST /admin/delete-product (sets 'deleted' to true and does not delete image)
 exports.postDeleteProduct = (req, res, next) => {
   Product
     .findById(req.body.id)
     .then(product => {
       // user can only delete owned products
       if(product.user_id.toString() !== req.user._id.toString()) return Promise.resolve(null);
-      return product.remove();
+      // return product.remove();
+      return product.update({$set: {deleted: true}});
     })
     .then(result => {
       if(!result) return Promise.resolve(null);
@@ -170,6 +173,7 @@ exports.postDeleteProduct = (req, res, next) => {
 };
 
 // DELETE /admin/delete-product/:id (using client-side JS to directly remove item from DOM)
+// This is NOT used, kept here for reference
 exports.asyncDeleteProduct = (req, res, next) => {
   Product
   .findById(req.params.id)    // different from POST /admin/delete-product
